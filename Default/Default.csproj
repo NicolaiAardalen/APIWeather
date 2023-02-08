@@ -68,10 +68,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DaySite.aspx" />
     <Content Include="Default.aspx" />
+    <Content Include="MonthSite.aspx" />
     <Content Include="Web.config" />
+    <Content Include="YearSite.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DaySite.aspx.cs">
+      <DependentUpon>DaySite.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DaySite.aspx.designer.cs">
+      <DependentUpon>DaySite.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -79,7 +89,21 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="MonthSite.aspx.cs">
+      <DependentUpon>MonthSite.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MonthSite.aspx.designer.cs">
+      <DependentUpon>MonthSite.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="YearSite.aspx.cs">
+      <DependentUpon>YearSite.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="YearSite.aspx.designer.cs">
+      <DependentUpon>YearSite.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -103,6 +127,9 @@
       <Project>{45747416-854d-4381-b6d4-964c44c10424}</Project>
       <Name>Harvester</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Images\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

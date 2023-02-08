@@ -1,173 +1,485 @@
-﻿
-
-using BusinessObjects;
+﻿using BusinessObjects;
+using DocumentFormat.OpenXml.Bibliography;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Web.UI.WebControls;
 
 namespace dbllayer123
 {
     public class DBL
     {
-        public void Insert(int year, int month, int day, int hour, float temprature, float precipiation, float humidity, float windDirection, float windSpeed, float windSpeedOfGust)
+        static string connectionString = ConfigurationManager.ConnectionStrings["connstr"].ConnectionString;
+        SqlConnection conn = new SqlConnection(connectionString);
+        public void Insert(int year, int month, int day, int hour, float temprature, float precipitation, float humidity, float windDirection, float windSpeed, float windSpeedOfGust, string sky)
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["connstr"].ConnectionString;
-            SqlParameter param;
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("insert into TemperaturCelsius values(@Year, @Month, @Day, @Hour, ROUND(@Temprature, 1), ROUND(@Precipitation, 1), ROUND(@Humidity, 1), ROUND(@WindDirection, 1), ROUND(@WindSpeed, 1), ROUND(@WindSpeedOfGust, 1), @sky)", conn);
 
+            cmd.Parameters.AddWithValue("Year", year);
+            cmd.Parameters.AddWithValue("Month", month);
+            cmd.Parameters.AddWithValue("Day", day);
+            cmd.Parameters.AddWithValue("Hour", hour);
+            cmd.Parameters.AddWithValue("Temprature", temprature);
+            cmd.Parameters.AddWithValue("Precipitation", precipitation);
+            cmd.Parameters.AddWithValue("Humidity", humidity);
+            cmd.Parameters.AddWithValue("WindDirection", windDirection);
+            cmd.Parameters.AddWithValue("WindSpeed", windSpeed);
+            cmd.Parameters.AddWithValue("WindSpeedOfGust", windSpeedOfGust);
+            cmd.Parameters.AddWithValue("Sky", sky);
 
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand("insert into TemperaturCelsius values(@Hour, @Day, @Month, @Year, ROUND(@Temprature, 1), ROUND(@Precipiation, 1), ROUND(@Humidity, 1), ROUND(@WindDirection, 1), ROUND(@WindSpeed, 1), ROUND(@WindSpeedOfGust, 1))", conn);
-                cmd.CommandType = CommandType.Text;
-
-
-
-                param = new SqlParameter("@Year", SqlDbType.Float);
-                param.Value = hour;
-                cmd.Parameters.Add(param);
-
-
-
-                param = new SqlParameter("@Month", SqlDbType.Float);
-                param.Value = day;
-                cmd.Parameters.Add(param);
-
-
-
-                param = new SqlParameter("@Day", SqlDbType.Float);
-                param.Value = month;
-                cmd.Parameters.Add(param);
-
-
-
-                param = new SqlParameter("@Hour", SqlDbType.Float);
-                param.Value = year;
-                cmd.Parameters.Add(param);
-
-
-
-                param = new SqlParameter("@Temprature", SqlDbType.Float);
-                param.Value = temprature;
-                cmd.Parameters.Add(param);
-
-
-
-                param = new SqlParameter("@Precipiation", SqlDbType.Float);
-                param.Value = precipiation;
-                cmd.Parameters.Add(param);
-
-
-
-                param = new SqlParameter("@Humidity", SqlDbType.Float);
-                param.Value = humidity;
-                cmd.Parameters.Add(param);
-
-
-
-                param = new SqlParameter("@WindDirection", SqlDbType.Float);
-                param.Value = windDirection;
-                cmd.Parameters.Add(param);
-
-
-
-                param = new SqlParameter("@WindSpeed", SqlDbType.Float);
-                param.Value = windSpeed;
-                cmd.Parameters.Add(param);
-
-
-
-                param = new SqlParameter("@WindSpeedOfGust", SqlDbType.Float);
-                param.Value = windSpeedOfGust;
-                cmd.Parameters.Add(param);
-
-
-
-                int rows = cmd.ExecuteNonQuery();
-                conn.Close();
-            }
+            int rows = cmd.ExecuteNonQuery();
+            conn.Close();
         }
-        public DataTable Search(string TextBoxS, string TextBoxS1, string TextBoxS2)
+        public List<WeatherReading> GetWeatherReadingByYearMonthAndDay(string Year, string Month, string Day)
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["connstr"].ConnectionString;
-
-
-            DataTable NicoTemperatur = new DataTable();
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            try
             {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand($"Select * From TemperaturCelsius WHERE Year = '{TextBoxS}' AND Month = '{TextBoxS1}' AND Day = '{TextBoxS2}' ORDER BY Hour desc", conn);
-                cmd.CommandType = CommandType.Text;
-                SqlDataReader reader = cmd.ExecuteReader();
-                NicoTemperatur.Load(reader);
-                reader.Close();
-                conn.Close();
-            }
-            return NicoTemperatur;
-        }
+                List<WeatherReading> weatherReadings = new List<WeatherReading>();
 
-        public List<WeatherReading> GetWeatherReadingByYearMonthAndDay(string TextBoxS, string TextBoxS1, string TextBoxS2)
-        {
-            var connectionString = ConfigurationManager.ConnectionStrings["connstr"].ConnectionString;
-            List<WeatherReading> weatherReadings = new List<WeatherReading>();
-
-            DataTable NicoTemperatur = new DataTable();
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
                 conn.Open();
-                SqlCommand cmd = new SqlCommand($"Select * From TemperaturCelsius WHERE Year = '{TextBoxS}' AND Month = '{TextBoxS1}' AND Day = '{TextBoxS2}' ORDER BY Hour desc", conn);
-                cmd.CommandType = CommandType.Text;
+                SqlCommand cmd = new SqlCommand($"Select * From TemperaturCelsius WHERE Year = @Year AND Month = @Month AND Day = @Day ORDER BY Hour desc", conn);
+
+                cmd.Parameters.AddWithValue("Year", Year);
+                cmd.Parameters.AddWithValue("Month", Month);
+                cmd.Parameters.AddWithValue("Day", Day);
+
                 SqlDataReader reader = cmd.ExecuteReader();
 
-                while(reader.Read())
+                while (reader.Read())
                 {
                     WeatherReading wr = new WeatherReading();
-                    wr.Temperature = reader.GetDouble(5);
-                    wr.Day= (int)reader["Day"];
+                    wr.Year = (int)reader["Year"];
+                    wr.Month = (int)reader["Month"];
+                    wr.Day = (int)reader["Day"];
+                    wr.Hour = (int)reader["Hour"];
+                    wr.Temperature = (double)reader["Temperature"];
+                    wr.Precipitation = (double)reader["Precipitation"];
+                    wr.Humidity = (double)reader["Humidity"];
+                    wr.WindDirection = (double)reader["WindDirection"];
+                    wr.WindSpeed = (double)reader["WindSpeed"];
+                    wr.WindSpeedOfGust = (double)reader["WindSpeedOfGust"];
+                    if (reader["Sky"].ToString().Length == 0)
+                    {
+                        wr.Sky = $@"~\Images\default.png";
+                    }
+                    else
+                    {
+                        wr.Sky = $@"~\Images\{reader["Sky"]}.png";
+                    }
+                    weatherReadings.Add(wr);
+                }
+                reader.Close();
+                conn.Close();
+
+                return weatherReadings;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return null;
+            }
+        }
+        public List<WeatherReading> GetWeatherReadingByYearAndMonth(string Year, string Month)
+        {
+            try
+            {
+                List<WeatherReading> weatherReadings = new List<WeatherReading>();
+
+                conn.Open();
+                SqlCommand cmd = new SqlCommand($"SELECT Year, Month, Day, Hour, Temperature FROM TemperaturCelsius Where Year = @Year and Month = @Month ORDER BY Year, Month, Day desc", conn);
+
+                cmd.Parameters.AddWithValue("Year", Year);
+                cmd.Parameters.AddWithValue("Month", Month);
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    WeatherReading wr = new WeatherReading();
+                    wr.Year = (int)reader["Year"];
+                    wr.Month = (int)reader["Month"];
+                    wr.Day = (int)reader["Day"];
+                    wr.Hour = (int)reader["Hour"];
+                    wr.Temperature = (double)reader["Temperature"];
 
                     weatherReadings.Add(wr);
                 }
-
-
-
-                NicoTemperatur.Load(reader);
                 reader.Close();
                 conn.Close();
+
+                return weatherReadings;
             }
-            return weatherReadings;
+            catch (ArgumentOutOfRangeException) { return null; }
         }
-
-        public DataTable Table()
+        public List<WeatherReading> GetWeatherReadingByYear(string Year)
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["connstr"].ConnectionString;
-
-            DataTable NicoTemperatur = new DataTable();
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
-
+            try
             {
+                List<WeatherReading> weatherReadings = new List<WeatherReading>();
 
                 conn.Open();
+                SqlCommand cmd = new SqlCommand($"SELECT Year, Month, Day, Hour, Temperature FROM TemperaturCelsius Where Year = @Year ORDER BY Year, Month desc", conn);
 
-                SqlCommand cmd = new SqlCommand("SELECT top(24)* FROM TemperaturCelsius ORDER BY Year, Month, Day desc, Hour desc", conn);
+                cmd.Parameters.AddWithValue("Year", Year);
 
                 SqlDataReader reader = cmd.ExecuteReader();
 
-                NicoTemperatur.Load(reader);
-
+                while (reader.Read())
+                {
+                    WeatherReading wr = new WeatherReading();
+                    wr.Year = (int)reader["Year"];
+                    wr.Month = (int)reader["Month"];
+                    wr.Day = (int)reader["Day"];
+                    wr.Hour = (int)reader["Hour"];
+                    wr.Temperature = (double)reader["Temperature"];
+                    weatherReadings.Add(wr);
+                }
                 reader.Close();
-
                 conn.Close();
+
+                return weatherReadings;
             }
-            return NicoTemperatur;
+            catch (ArgumentOutOfRangeException)
+            {
+                return null;
+            }
+        }
+        public List<WeatherReading> GetLast24hours()
+        {
+            List<WeatherReading> weatherReadings = new List<WeatherReading>();
+
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("SELECT top(24) * FROM TemperaturCelsius ORDER BY Year desc, Month desc, Day desc, Hour desc", conn);
+            cmd.CommandType = CommandType.Text;
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                WeatherReading wr = new WeatherReading();
+                wr.Year = (int)reader["Year"];
+                wr.Month = (int)reader["Month"];
+                wr.Day = (int)reader["Day"];
+                wr.Hour = (int)reader["Hour"];
+                wr.Temperature = (double)reader["Temperature"];
+                wr.Precipitation = (double)reader["Precipitation"];
+                wr.Humidity = (double)reader["Humidity"];
+                wr.WindDirection = (double)reader["WindDirection"];
+                wr.WindSpeed = (double)reader["WindSpeed"];
+                wr.WindSpeedOfGust = (double)reader["WindSpeedOfGust"];
+                if (reader["Sky"].ToString().Length == 0)
+                {
+                    wr.Sky = $@"~\Images\default.png";
+                }
+                else
+                {
+                    wr.Sky = $@"~\Images\{reader["Sky"]}.png";
+                }
+                weatherReadings.Add(wr);
+            }
+            reader.Close();
+            conn.Close();
+
+            return weatherReadings;
+        }
+        public List<WeatherReading> GetLast24hoursForGraph()
+        {
+            List<WeatherReading> weatherReadings = new List<WeatherReading>();
+
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("SELECT top(24) * FROM TemperaturCelsius ORDER BY Year desc, Month desc, Day desc, Hour desc", conn);
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                WeatherReading wr = new WeatherReading();
+                wr.Year = (int)reader["Year"];
+                wr.Month = (int)reader["Month"];
+                wr.Day = (int)reader["Day"];
+                wr.Hour = (int)reader["Hour"];
+                wr.Temperature = (double)reader["Temperature"];
+                wr.Precipitation = (double)reader["Precipitation"];
+                wr.Humidity = (double)reader["Humidity"];
+                wr.WindDirection = (double)reader["WindDirection"];
+                wr.WindSpeed = (double)reader["WindSpeed"];
+                wr.WindSpeedOfGust = (double)reader["WindSpeedOfGust"];
+                weatherReadings.Add(wr);
+            }
+            reader.Close();
+            conn.Close();
+
+            return weatherReadings;
+        }
+        public List<WeatherReading> GetSpecificDay()
+        {
+            List<WeatherReading> weatherReadings = new List<WeatherReading>();
+
+            conn.Open();
+            SqlCommand cmd = new SqlCommand($"SELECT * FROM TemperaturCelsius Where day = {DateTime.Now.Day} and month = {DateTime.Now.Month} and year = {DateTime.Now.Year} ORDER BY Year, Month, Day desc, Hour desc", conn);
+            cmd.CommandType = CommandType.Text;
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                WeatherReading wr = new WeatherReading();
+                wr.Year = (int)reader["Year"];
+                wr.Month = (int)reader["Month"];
+                wr.Day = (int)reader["Day"];
+                wr.Hour = (int)reader["Hour"];
+                wr.Temperature = (double)reader["Temperature"];
+                wr.Precipitation = (double)reader["Precipitation"];
+                wr.Humidity = (double)reader["Humidity"];
+                wr.WindDirection = (double)reader["WindDirection"];
+                wr.WindSpeed = (double)reader["WindSpeed"];
+                wr.WindSpeedOfGust = (double)reader["WindSpeedOfGust"];
+                if (reader["Sky"].ToString().Length == 0)
+                {
+                    wr.Sky = $@"~\Images\default.png";
+                }
+                else
+                {
+                    wr.Sky = $@"~\Images\{reader["Sky"]}.png";
+                }
+                weatherReadings.Add(wr);
+            }
+            reader.Close();
+            conn.Close();
+
+            return weatherReadings;
+        }
+        public List<WeatherReading> GetSpecificMonth()
+        {
+            List<WeatherReading> weatherReadings = new List<WeatherReading>();
+
+            conn.Open();
+            SqlCommand cmd = new SqlCommand($"SELECT Year, Month, Day, Hour, Temperature FROM TemperaturCelsius Where Year = {DateTime.Now.Year} and Month = {DateTime.Now.Month} ORDER BY Year, Month, Day desc", conn);
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                WeatherReading wr = new WeatherReading();
+                wr.Year = (int)reader["Year"];
+                wr.Month = (int)reader["Month"];
+                wr.Day = (int)reader["Day"];
+                wr.Hour = (int)reader["Hour"];
+                wr.Temperature = (double)reader["Temperature"];
+                weatherReadings.Add(wr);
+            }
+            reader.Close();
+            conn.Close();
+
+            return weatherReadings;
+        }
+        public List<WeatherReading> GetSpecificYear()
+        {
+            List<WeatherReading> weatherReadings = new List<WeatherReading>();
+
+            conn.Open();
+            SqlCommand cmd = new SqlCommand($"SELECT Year, Month, Day, Hour, Temperature FROM TemperaturCelsius Where Year = {DateTime.Now.Year} ORDER BY Year, Month desc", conn);
+
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                WeatherReading wr = new WeatherReading();
+                wr.Year = (int)reader["Year"];
+                wr.Month = (int)reader["Month"];
+                wr.Day = (int)reader["Day"];
+                wr.Hour = (int)reader["Hour"];
+                wr.Temperature = (double)reader["Temperature"];
+                weatherReadings.Add(wr);
+            }
+            reader.Close();
+            conn.Close();
+
+            return weatherReadings;
+        }
+        public List<WeatherReading> UpdateGridviewByButtonOnDaySite(int year,int month,int day)
+        {
+            var cmd = new SqlCommand($"Select * From TemperaturCelsius WHERE Year = @year AND Month = @month AND Day = @day ORDER BY Hour desc", conn);
+            
+            cmd.Parameters.AddWithValue("month", month);
+            cmd.Parameters.AddWithValue("year", year);
+            cmd.Parameters.AddWithValue("day", day);
+            conn.Open();
+            var list = new List<WeatherReading>();
+            var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                WeatherReading wr = new WeatherReading();
+                wr.Year = (int)reader["Year"];
+                wr.Month = (int)reader["Month"];
+                wr.Day = (int)reader["Day"];
+                wr.Hour = (int)reader["Hour"];
+                wr.Temperature = (double)reader["Temperature"];
+                wr.Precipitation = (double)reader["Precipitation"];
+                wr.Humidity = (double)reader["Humidity"];
+                wr.WindDirection = (double)reader["WindDirection"];
+                wr.WindSpeed = (double)reader["WindSpeed"];
+                wr.WindSpeedOfGust = (double)reader["WindSpeedOfGust"];
+                if (reader["Sky"].ToString().Length == 0)
+                {
+                    wr.Sky = $@"~\Images\default.png";
+                }
+                else
+                {
+                    wr.Sky = $@"~\Images\{reader["Sky"]}.png";
+                }
+                list.Add(wr);
+            }
+            reader.Close();
+            conn.Close();
+            return list;
+        }
+        public List<WeatherReading> UpdateGridviewByButtonOnMonthSite(int Year, int Month)
+        {
+            try
+            {
+                var months1 = new[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+                var selectedmonth = Month;//Array.IndexOf(months1, Month.SelectedItem.Text) + 1;
+                var selectedyear = Year;
+                var cmd = new SqlCommand($"SELECT Year, Month, Day, Hour, Temperature FROM TemperaturCelsius Where Year = @Year and Month = @Month ORDER BY Year, Month, Day desc", conn);
+                
+                cmd.Parameters.AddWithValue("Year", selectedyear);
+                cmd.Parameters.AddWithValue("Month", selectedmonth);
+                
+                conn.Open();
+                var list = new List<WeatherReading>();
+                var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    var ws = new WeatherReading
+                    {
+                        Year = (int)reader["Year"],
+                        Month = (int)reader["Month"],
+                        Day = (int)reader["Day"],
+                        Hour = (int)reader["Hour"],
+                        Temperature = (double)reader["Temperature"],
+                    };
+                    list.Add(ws);
+                }
+                reader.Close();
+                conn.Close();
+                return list;
+            }
+            catch (ArgumentOutOfRangeException) { return null; }
+        }
+        public List<WeatherReading> UpdateGridviewByButtonOnYearSite(DropDownList Year)
+        {
+            var selectedyear = Year.SelectedItem.Text;
+            var cmd = new SqlCommand($"SELECT Year, Month, Day, Hour, Temperature FROM TemperaturCelsius Where Year = @Year ORDER BY Year, Month desc", conn);
+            cmd.Parameters.AddWithValue("Year", selectedyear);
+            conn.Open();
+            var list = new List<WeatherReading>();
+            var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                var ws = new WeatherReading
+                {
+                    Year = (int)reader["Year"],
+                    Month = (int)reader["Month"],
+                    Day = (int)reader["Day"],
+                    Hour = (int)reader["Hour"],
+                    Temperature = (double)reader["Temperature"],
+                };
+                list.Add(ws);
+            }
+            reader.Close();
+            conn.Close();
+            return list;
+        }
+        public List<WeatherReading> Last24HourGraph()
+        {
+            List<WeatherReading> weatherReadings = new List<WeatherReading>();
+
+            conn.Open();
+            SqlCommand cmd = new SqlCommand($"SELECT top(24) * FROM TemperaturCelsius ORDER BY Year, Month, Day desc, Hour desc", conn);
+            cmd.CommandType = CommandType.Text;
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                WeatherReading wr = new WeatherReading();
+                wr.Year = (int)reader["Year"];
+                wr.Month = (int)reader["Month"];
+                wr.Day = (int)reader["Day"];
+                wr.Hour = (int)reader["Hour"];
+                wr.Temperature = (double)reader["Temperature"];
+                wr.Precipitation = (double)reader["Precipitation"];
+                wr.Humidity = (double)reader["Humidity"];
+                wr.WindDirection = (double)reader["WindDirection"];
+                wr.WindSpeed = (double)reader["WindSpeed"];
+                wr.WindSpeedOfGust = (double)reader["WindSpeedOfGust"];
+                weatherReadings.Add(wr);
+            }
+            reader.Close();
+            conn.Close();
+
+            return weatherReadings;
+        }
+        //public List<int> GetDaysInDB()
+        //{
+        //    List<int> days = new List<int>();
+
+        //    conn.Open();
+        //    SqlCommand cmd = new SqlCommand($"select distinct day from TemperaturCelsius", conn);
+        //    cmd.CommandType = CommandType.Text;
+        //    SqlDataReader reader = cmd.ExecuteReader();
+
+        //    while (reader.Read())
+        //    {
+        //        int day;
+        //        day = (int)reader["Day"];
+        //    }
+        //    reader.Close();
+        //    conn.Close();
+
+        //    return days;
+        //}
+        //public List<int> GetMonthsInDB()
+        //{
+        //    List<int> months = new List<int>();
+
+        //    conn.Open();
+        //    SqlCommand cmd = new SqlCommand("select distinct month from TemperaturCelsius", conn);
+        //    cmd.CommandType = CommandType.Text;
+        //    SqlDataReader reader = cmd.ExecuteReader();
+
+        //    while (reader.Read())
+        //    {
+        //        int month;
+        //        month = (int)reader["Month"];
+        //    }
+        //    reader.Close();
+        //    conn.Close();
+
+        //    return months;
+        //}
+        public List<int> GetYearsInDB()
+        {
+            List<int> years = new List<int>();
+
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("select distinct year from TemperaturCelsius", conn);
+            cmd.CommandType = CommandType.Text;
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                int year;
+                year = (int)reader["Year"];
+                years.Add(year);
+            }
+            reader.Close();
+            conn.Close();
+
+            return years;
         }
     }
 }
