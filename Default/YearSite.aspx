@@ -16,15 +16,6 @@
         <br />
         <div>
             <asp:DropDownList ID="Year" runat="server" AutoPostBack="true" OnSelectedIndexChanged="UpdateGridViewOnDropDownlList">
-          <%--  <asp:listitem text="2022" value="2022"></asp:listitem>
-            <asp:listitem text="2023" value="2023"></asp:listitem>
-            <asp:listitem text="2024" value="2024"></asp:listitem>
-            <asp:listitem text="2025" value="2025"></asp:listitem>
-            <asp:listitem text="2026" value="2026"></asp:listitem>
-            <asp:listitem text="2027" value="2027"></asp:listitem>
-            <asp:listitem text="2028" value="2028"></asp:listitem>
-            <asp:listitem text="2029" value="2029"></asp:listitem>
-            <asp:listitem text="2030" value="2030"></asp:listitem>--%>
         </asp:DropDownList>
         <asp:Label ID="ErrorMessage" Visible="false" runat="server" Text="The selected Year is not registered!"></asp:Label>
         <br/>

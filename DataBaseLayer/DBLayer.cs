@@ -55,12 +55,12 @@ namespace dbllayer123
                     wr.Month = (int)reader["Month"];
                     wr.Day = (int)reader["Day"];
                     wr.Hour = (int)reader["Hour"];
-                    wr.Temperature = (double)reader["Temperature"];
-                    wr.Precipitation = (double)reader["Precipitation"];
-                    wr.Humidity = (double)reader["Humidity"];
-                    wr.WindDirection = (double)reader["WindDirection"];
-                    wr.WindSpeed = (double)reader["WindSpeed"];
-                    wr.WindSpeedOfGust = (double)reader["WindSpeedOfGust"];
+                    wr.Temperature = (string)reader["Temperature"] + "°C";
+                    wr.Precipitation = (string)reader["Precipitation"] + "mm";
+                    wr.Humidity = (string)reader["Humidity"] + "%";
+                    wr.WindDirection = (string)reader["WindDirection"] + "°";
+                    wr.WindSpeed = (string)reader["WindSpeed"] + "m/s";
+                    wr.WindSpeedOfGust = (string)reader["WindSpeedOfGust"] + "m/s";
                     if (reader["Sky"].ToString().Length == 0)
                     {
                         wr.Sky = $@"~\Images\default.png";
@@ -102,7 +102,7 @@ namespace dbllayer123
                     wr.Month = (int)reader["Month"];
                     wr.Day = (int)reader["Day"];
                     wr.Hour = (int)reader["Hour"];
-                    wr.Temperature = (double)reader["Temperature"];
+                    wr.Temperature = (string)reader["Temperature"] + "°C";
 
                     weatherReadings.Add(wr);
                 }
@@ -133,7 +133,7 @@ namespace dbllayer123
                     wr.Month = (int)reader["Month"];
                     wr.Day = (int)reader["Day"];
                     wr.Hour = (int)reader["Hour"];
-                    wr.Temperature = (double)reader["Temperature"];
+                    wr.Temperature = (string)reader["Temperature"] + "°C";
                     weatherReadings.Add(wr);
                 }
                 reader.Close();
@@ -162,12 +162,12 @@ namespace dbllayer123
                 wr.Month = (int)reader["Month"];
                 wr.Day = (int)reader["Day"];
                 wr.Hour = (int)reader["Hour"];
-                wr.Temperature = (double)reader["Temperature"];
-                wr.Precipitation = (double)reader["Precipitation"];
-                wr.Humidity = (double)reader["Humidity"];
-                wr.WindDirection = (double)reader["WindDirection"];
-                wr.WindSpeed = (double)reader["WindSpeed"];
-                wr.WindSpeedOfGust = (double)reader["WindSpeedOfGust"];
+                wr.Temperature = (string)reader["Temperature"] + "°C";
+                wr.Precipitation = (string)reader["Precipitation"] + "mm";
+                wr.Humidity = (string)reader["Humidity"] + "%";
+                wr.WindDirection = (string)reader["WindDirection"] + "°";
+                wr.WindSpeed = (string)reader["WindSpeed"] + "m/s";
+                wr.WindSpeedOfGust = (string)reader["WindSpeedOfGust"] + "m/s";
                 if (reader["Sky"].ToString().Length == 0)
                 {
                     wr.Sky = $@"~\Images\default.png";
@@ -176,35 +176,6 @@ namespace dbllayer123
                 {
                     wr.Sky = $@"~\Images\{reader["Sky"]}.png";
                 }
-                weatherReadings.Add(wr);
-            }
-            reader.Close();
-            conn.Close();
-
-            return weatherReadings;
-        }
-        public List<WeatherReading> GetLast24hoursForGraph()
-        {
-            List<WeatherReading> weatherReadings = new List<WeatherReading>();
-
-            conn.Open();
-            SqlCommand cmd = new SqlCommand("SELECT top(24) * FROM TemperaturCelsius ORDER BY Year desc, Month desc, Day desc, Hour desc", conn);
-
-            SqlDataReader reader = cmd.ExecuteReader();
-
-            while (reader.Read())
-            {
-                WeatherReading wr = new WeatherReading();
-                wr.Year = (int)reader["Year"];
-                wr.Month = (int)reader["Month"];
-                wr.Day = (int)reader["Day"];
-                wr.Hour = (int)reader["Hour"];
-                wr.Temperature = (double)reader["Temperature"];
-                wr.Precipitation = (double)reader["Precipitation"];
-                wr.Humidity = (double)reader["Humidity"];
-                wr.WindDirection = (double)reader["WindDirection"];
-                wr.WindSpeed = (double)reader["WindSpeed"];
-                wr.WindSpeedOfGust = (double)reader["WindSpeedOfGust"];
                 weatherReadings.Add(wr);
             }
             reader.Close();
@@ -228,12 +199,12 @@ namespace dbllayer123
                 wr.Month = (int)reader["Month"];
                 wr.Day = (int)reader["Day"];
                 wr.Hour = (int)reader["Hour"];
-                wr.Temperature = (double)reader["Temperature"];
-                wr.Precipitation = (double)reader["Precipitation"];
-                wr.Humidity = (double)reader["Humidity"];
-                wr.WindDirection = (double)reader["WindDirection"];
-                wr.WindSpeed = (double)reader["WindSpeed"];
-                wr.WindSpeedOfGust = (double)reader["WindSpeedOfGust"];
+                wr.Temperature = (string)reader["Temperature"] + "°C";
+                wr.Precipitation = (string)reader["Precipitation"] + "mm";
+                wr.Humidity = (string)reader["Humidity"] + "%";
+                wr.WindDirection = (string)reader["WindDirection"] + "°";
+                wr.WindSpeed = (string)reader["WindSpeed"] + "m/s";
+                wr.WindSpeedOfGust = (string)reader["WindSpeedOfGust"] + "m/s";
                 if (reader["Sky"].ToString().Length == 0)
                 {
                     wr.Sky = $@"~\Images\default.png";
@@ -265,7 +236,7 @@ namespace dbllayer123
                 wr.Month = (int)reader["Month"];
                 wr.Day = (int)reader["Day"];
                 wr.Hour = (int)reader["Hour"];
-                wr.Temperature = (double)reader["Temperature"];
+                wr.Temperature = (string)reader["Temperature"] + "°C";
                 weatherReadings.Add(wr);
             }
             reader.Close();
@@ -289,7 +260,7 @@ namespace dbllayer123
                 wr.Month = (int)reader["Month"];
                 wr.Day = (int)reader["Day"];
                 wr.Hour = (int)reader["Hour"];
-                wr.Temperature = (double)reader["Temperature"];
+                wr.Temperature = (string)reader["Temperature"] + "°C";
                 weatherReadings.Add(wr);
             }
             reader.Close();
@@ -315,12 +286,12 @@ namespace dbllayer123
                 wr.Month = (int)reader["Month"];
                 wr.Day = (int)reader["Day"];
                 wr.Hour = (int)reader["Hour"];
-                wr.Temperature = (double)reader["Temperature"];
-                wr.Precipitation = (double)reader["Precipitation"];
-                wr.Humidity = (double)reader["Humidity"];
-                wr.WindDirection = (double)reader["WindDirection"];
-                wr.WindSpeed = (double)reader["WindSpeed"];
-                wr.WindSpeedOfGust = (double)reader["WindSpeedOfGust"];
+                wr.Temperature = (string)reader["Temperature"] + "°C";
+                wr.Precipitation = (string)reader["Precipitation"] + "mm";
+                wr.Humidity = (string)reader["Humidity"] + "%";
+                wr.WindDirection = (string)reader["WindDirection"] + "°";
+                wr.WindSpeed = (string)reader["WindSpeed"] + "m/s";
+                wr.WindSpeedOfGust = (string)reader["WindSpeedOfGust"] + "m/s";
                 if (reader["Sky"].ToString().Length == 0)
                 {
                     wr.Sky = $@"~\Images\default.png";
@@ -340,7 +311,7 @@ namespace dbllayer123
             try
             {
                 var months1 = new[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
-                var selectedmonth = Month;//Array.IndexOf(months1, Month.SelectedItem.Text) + 1;
+                var selectedmonth = Month;
                 var selectedyear = Year;
                 var cmd = new SqlCommand($"SELECT Year, Month, Day, Hour, Temperature FROM TemperaturCelsius Where Year = @Year and Month = @Month ORDER BY Year, Month, Day desc", conn);
                 
@@ -359,7 +330,7 @@ namespace dbllayer123
                         Month = (int)reader["Month"],
                         Day = (int)reader["Day"],
                         Hour = (int)reader["Hour"],
-                        Temperature = (double)reader["Temperature"],
+                        Temperature = (string)reader["Temperature"] + "°C",
                     };
                     list.Add(ws);
                 }
@@ -386,7 +357,7 @@ namespace dbllayer123
                     Month = (int)reader["Month"],
                     Day = (int)reader["Day"],
                     Hour = (int)reader["Hour"],
-                    Temperature = (double)reader["Temperature"],
+                    Temperature = (string)reader["Temperature"] + "°C",
                 };
                 list.Add(ws);
             }
@@ -394,73 +365,6 @@ namespace dbllayer123
             conn.Close();
             return list;
         }
-        public List<WeatherReading> Last24HourGraph()
-        {
-            List<WeatherReading> weatherReadings = new List<WeatherReading>();
-
-            conn.Open();
-            SqlCommand cmd = new SqlCommand($"SELECT top(24) * FROM TemperaturCelsius ORDER BY Year, Month, Day desc, Hour desc", conn);
-            cmd.CommandType = CommandType.Text;
-            SqlDataReader reader = cmd.ExecuteReader();
-
-            while (reader.Read())
-            {
-                WeatherReading wr = new WeatherReading();
-                wr.Year = (int)reader["Year"];
-                wr.Month = (int)reader["Month"];
-                wr.Day = (int)reader["Day"];
-                wr.Hour = (int)reader["Hour"];
-                wr.Temperature = (double)reader["Temperature"];
-                wr.Precipitation = (double)reader["Precipitation"];
-                wr.Humidity = (double)reader["Humidity"];
-                wr.WindDirection = (double)reader["WindDirection"];
-                wr.WindSpeed = (double)reader["WindSpeed"];
-                wr.WindSpeedOfGust = (double)reader["WindSpeedOfGust"];
-                weatherReadings.Add(wr);
-            }
-            reader.Close();
-            conn.Close();
-
-            return weatherReadings;
-        }
-        //public List<int> GetDaysInDB()
-        //{
-        //    List<int> days = new List<int>();
-
-        //    conn.Open();
-        //    SqlCommand cmd = new SqlCommand($"select distinct day from TemperaturCelsius", conn);
-        //    cmd.CommandType = CommandType.Text;
-        //    SqlDataReader reader = cmd.ExecuteReader();
-
-        //    while (reader.Read())
-        //    {
-        //        int day;
-        //        day = (int)reader["Day"];
-        //    }
-        //    reader.Close();
-        //    conn.Close();
-
-        //    return days;
-        //}
-        //public List<int> GetMonthsInDB()
-        //{
-        //    List<int> months = new List<int>();
-
-        //    conn.Open();
-        //    SqlCommand cmd = new SqlCommand("select distinct month from TemperaturCelsius", conn);
-        //    cmd.CommandType = CommandType.Text;
-        //    SqlDataReader reader = cmd.ExecuteReader();
-
-        //    while (reader.Read())
-        //    {
-        //        int month;
-        //        month = (int)reader["Month"];
-        //    }
-        //    reader.Close();
-        //    conn.Close();
-
-        //    return months;
-        //}
         public List<int> GetYearsInDB()
         {
             List<int> years = new List<int>();

@@ -7,12 +7,12 @@
         public int Month { get; set; }
         public int Day { get; set; }
         public int Hour { get; set; }
-        public double Temperature { get; set; }
-        public double Precipitation { get; set; }
-        public double Humidity { get; set; }
-        public double WindDirection { get; set; }
-        public double WindSpeed { get; set; }
-        public double WindSpeedOfGust { get; set; }
+        public string Temperature { get; set; }
+        public string Precipitation { get; set; }
+        public string Humidity { get; set; }
+        public string WindDirection { get; set; }
+        public string WindSpeed { get; set; }
+        public string WindSpeedOfGust { get; set; }
         public string Sky { get; set; }
 
     }

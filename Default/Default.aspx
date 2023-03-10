@@ -76,7 +76,7 @@
             <asp:Label ID="Label4" runat="server" Text="Avg Temperature: "></asp:Label>
             <asp:Label ID="LabelAvgTemp" runat="server" Text="LabelAvgTemp"></asp:Label>
         </div>
-        <asp:chart id="ChartTemp" runat="server" 
+        <%--<%--<%--<asp:chart id="ChartTemp" runat="server" 
             ImageLocation="~/TempImages/ChartPic_#SEQ(300,3)" BorderWidth="2px" 
             BackGradientStyle="TopBottom" BackSecondaryColor="White" Palette="None" 
             BorderlineDashStyle="Solid" BorderColor="#38505D" Height="296px" Width="790px" 
@@ -92,22 +92,39 @@
 									    <asp:series Name="Series1"  BorderColor="#38505d" Color="Black" 
                                             ChartType="Line" YValuesPerPoint="24" >
                                         </asp:series>
-                                    </asp:series>--%>
+                                    </asp:series>
 								
 								<chartareas>
 									<asp:chartarea  Name="ChartArea1" BorderColor="#38505d" BorderDashStyle="Solid" BackSecondaryColor="White" BackColor="white" ShadowColor="Transparent" BackGradientStyle="TopBottom">
-										<%--<area3dstyle Rotation="10" perspective="10" Inclination="15" IsRightAngleAxes="False" wallwidth="0" IsClustered="False"></area3dstyle>--%>
-										<%--<axisy linecolor="#38505d" IsLabelAutoFit="False">
+										<area3dstyle Rotation="10" perspective="10" Inclination="15" IsRightAngleAxes="False" wallwidth="0" IsClustered="False"></area3dstyle>
+										<axisy linecolor="#38505d" IsLabelAutoFit="False">
 											<labelstyle font="Helvetica Neue, 8.25pt, style=Bold" ForeColor="#38505d" />
 											<majorgrid linecolor="#38505d" />
 										</axisy>
 										<axisx linecolor="#38505d" IsLabelAutoFit="False">
 											<labelstyle font="Helvetica Neue, 8.25pt, style=Bold" ForeColor="#38505d" />
 											<majorgrid linecolor="#38505d" />
-										</axisx>--%>
+										</axisx>
 									</asp:chartarea>
 								</chartareas>
-							</asp:chart>
+							</asp:chart>--%>
+        <asp:Chart ID="ChartTemp" runat="server" Width="700px" BorderWidth="2px" 
+            BackGradientStyle="TopBottom" BackSecondaryColor="White" Palette="None" 
+            BorderlineDashStyle="Solid" BorderColor="#38505D" EnableViewState="True">
+            <titles>
+									<asp:title ShadowColor="white" Font="Helvetica Neue, 12pt, style=Bold" ShadowOffset="3" Text="Temperature" ForeColor="#38505d"></asp:title>
+								</titles>
+								<legends>
+									<asp:legend Enabled="False" IsTextAutoFit="False" Name="Default" BackColor="Transparent" Font="Helvetica Neue, 8.25pt, style=Bold"></asp:legend>
+								</legends>
+								<borderskin skinstyle="None"></borderskin>
+                <Series>
+                    <asp:Series Name="Temp"></asp:Series>
+                </Series>
+                <ChartAreas>
+                    <asp:ChartArea Name="ChartArea1"></asp:ChartArea>
+                </ChartAreas>
+            </asp:Chart>
     </form>
 </body>
 </html>

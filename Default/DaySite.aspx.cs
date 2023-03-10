@@ -18,20 +18,20 @@ namespace Default
                 Tabell();
                 StartupDrowDownValues();
                 BindYearsDropDown();
-                //BindChart();
+                BindChart();
             }
         }
         private BLayer db = new BLayer();
         public void Tabell()
         {
             List<WeatherReading> wrs = db.GetSpecificDay();
-            var maxTemp = wrs.Max(m => m.Temperature);
+            var maxTemp = wrs.Max(m => double.Parse(m.Temperature.Replace("°C", "")));
             LabelMaxTemp.Text = maxTemp.ToString();
-            MaxTempHour.Text = wrs.Where(m => m.Temperature == maxTemp).Select(m => m.Hour).ToList()[0].ToString();
-            var minTemp = wrs.Min(m => m.Temperature);
+            MaxTempHour.Text = wrs.Where(m => double.Parse(m.Temperature.Replace("°C", "")) == maxTemp).Select(m => m.Hour).ToList()[0].ToString();
+            var minTemp = wrs.Min(m => double.Parse(m.Temperature.Replace("°C", "")));
             LabelMinTemp.Text = minTemp.ToString();
-            MinTempHour.Text = wrs.Where(m => m.Temperature == minTemp).Select(m => m.Hour).ToList()[0].ToString();
-            LabelAvgTemp.Text = Math.Round(wrs.Average(m => m.Temperature), 1).ToString();
+            MinTempHour.Text = wrs.Where(m => double.Parse(m.Temperature.Replace("°C", "")) == minTemp).Select(m => m.Hour).ToList()[0].ToString();
+            LabelAvgTemp.Text = Math.Round(wrs.Average(m => double.Parse(m.Temperature.Replace("°C", ""))), 1).ToString();
             GridView1.DataSource = wrs;
             GridView1.DataBind();
         }
@@ -51,15 +51,53 @@ namespace Default
             List<WeatherReading> wrs = db.GetWeatherReadingByYearMonthAndDay(Year.Text, Month.Text, Day.Text);
             try
             {
-                var maxTemp = wrs.Max(m => m.Temperature);
+                var maxTemp = wrs.Max(m => double.Parse(m.Temperature.Replace("°C", "")));
                 LabelMaxTemp.Text = maxTemp.ToString();
-                MaxTempHour.Text = wrs.Where(m => m.Temperature == maxTemp).Select(m => m.Hour).ToList()[0].ToString();
-                var minTemp = wrs.Min(m => m.Temperature);
+                MaxTempHour.Text = wrs.Where(m => double.Parse(m.Temperature.Replace("°C", "")) == maxTemp).Select(m => m.Hour).ToList()[0].ToString();
+                var minTemp = wrs.Min(m => double.Parse(m.Temperature.Replace("°C", "")));
                 LabelMinTemp.Text = minTemp.ToString();
-                MinTempHour.Text = wrs.Where(m => m.Temperature == minTemp).Select(m => m.Hour).ToList()[0].ToString();
-                LabelAvgTemp.Text = Math.Round(wrs.Average(m => m.Temperature), 1).ToString();
+                MinTempHour.Text = wrs.Where(m => double.Parse(m.Temperature.Replace("°C", "")) == minTemp).Select(m => m.Hour).ToList()[0].ToString();
+                LabelAvgTemp.Text = Math.Round(wrs.Average(m => double.Parse(m.Temperature.Replace("°C", ""))), 1).ToString();
                 GridView1.DataSource = wrs;
                 GridView1.DataBind();
+                List<TempGraph> tempGraphs = new List<TempGraph>();
+                for (int i = 0; i < wrs.Count; i++)
+                {
+                    TempGraph graph = new TempGraph();
+                    graph.Temperature = double.Parse(wrs[i].Temperature.Replace("°C", ""));
+                    graph.Hour = wrs[i].Hour;
+                    tempGraphs.Add(graph);
+                }
+
+                if (tempGraphs == null)
+                {
+                    return;
+                };
+
+                tempGraphs.Reverse();
+
+                ChartTemp.Series[0].IsXValueIndexed = true;
+                ChartTemp.ChartAreas[0].AxisX.Interval = 1;
+                ChartTemp.Series[0].XValueMember = "Hour";
+                ChartTemp.Series[0].YValueMembers = "Temperature";
+                ChartTemp.Series[0].ChartType = SeriesChartType.Line;
+
+                ChartTemp.DataSource = tempGraphs;
+                ChartTemp.DataBind();
+                string zero = "";
+                for (int i = 0; i < wrs.Count; i++)
+                {
+                    if (wrs[i].Hour.ToString().Count() < 2)
+                    {
+                        zero = "0";
+                    }
+                    else
+                    {
+                        zero = "";
+                    }
+                    ChartTemp.Series[0].Points[i].ToolTip = $"{wrs[i].Temperature}°C - {zero}{wrs[i].Hour}:00";
+                    ChartTemp.Series[0].Points[i].Color = Color.FromArgb(56, 80, 93);
+                }
                 ErrorMessage.Visible = false;
             }
             catch (ArgumentOutOfRangeException) { }
@@ -96,23 +134,59 @@ namespace Default
             month= Month.SelectedIndex+1;  
             day= Day.SelectedIndex+1;
 
-            List<WeatherReading> wrs = db.UpdateGridviewByButtonOnDaySite(year, month, day);//(Year, Month, Day);
+            List<WeatherReading> wrs = db.UpdateGridviewByButtonOnDaySite(year, month, day);
             if (wrs.Count == 0)
             {
                 ErrorMessage.Visible = true;
                 return;
             }
-            var maxTemp = wrs.Max(m => m.Temperature);
+            var maxTemp = wrs.Max(m => double.Parse(m.Temperature.Replace("°C", "")));
             LabelMaxTemp.Text = maxTemp.ToString();
-            MaxTempHour.Text = wrs.Where(m => m.Temperature == maxTemp).Select(m => m.Hour).ToList()[0].ToString();
-            var minTemp = wrs.Min(m => m.Temperature);
+            MaxTempHour.Text = wrs.Where(m => double.Parse(m.Temperature.Replace("°C", "")) == maxTemp).Select(m => m.Hour).ToList()[0].ToString();
+            var minTemp = wrs.Min(m => double.Parse(m.Temperature.Replace("°C", "")));
             LabelMinTemp.Text = minTemp.ToString();
-            MinTempHour.Text = wrs.Where(m => m.Temperature == minTemp).Select(m => m.Hour).ToList()[0].ToString();
-            LabelAvgTemp.Text = Math.Round(wrs.Average(m => m.Temperature), 1).ToString();
+            MinTempHour.Text = wrs.Where(m => double.Parse(m.Temperature.Replace("°C", "")) == minTemp).Select(m => m.Hour).ToList()[0].ToString();
+            LabelAvgTemp.Text = Math.Round(wrs.Average(m => double.Parse(m.Temperature.Replace("°C", ""))), 1).ToString();
             GridView1.DataSource = wrs;
             GridView1.DataBind();
-            GridView1.DataSource = wrs;
-            GridView1.DataBind();
+            List<TempGraph> tempGraphs = new List<TempGraph>();
+            for (int i = 0; i < wrs.Count; i++)
+            {
+                TempGraph graph = new TempGraph();
+                graph.Temperature = double.Parse(wrs[i].Temperature.Replace("°C", ""));
+                graph.Hour = wrs[i].Hour;
+                tempGraphs.Add(graph);
+            }
+
+            if (tempGraphs == null)
+            {
+                return;
+            };
+
+            tempGraphs.Reverse();
+
+            ChartTemp.Series[0].IsXValueIndexed = true;
+            ChartTemp.ChartAreas[0].AxisX.Interval = 1;
+            ChartTemp.Series[0].XValueMember = "Hour";
+            ChartTemp.Series[0].YValueMembers = "Temperature";
+            ChartTemp.Series[0].ChartType = SeriesChartType.Line;
+
+            ChartTemp.DataSource = tempGraphs;
+            ChartTemp.DataBind();
+            string zero = "";
+            for (int i = 0; i < wrs.Count; i++)
+            {
+                if (wrs[i].Hour.ToString().Count() < 2)
+                {
+                    zero = "0";
+                }
+                else
+                {
+                    zero = "";
+                }
+                ChartTemp.Series[0].Points[i].ToolTip = $"{double.Parse(wrs[i].Temperature.Replace("°C", ""))}°C - {zero}{wrs[i].Hour}:00";
+                ChartTemp.Series[0].Points[i].Color = Color.FromArgb(56, 80, 93);
+            }
             ErrorMessage.Visible = false;
         }
         protected void Right_Click(object sender, EventArgs e)
@@ -128,27 +202,63 @@ namespace Default
                 ErrorMessage.Visible = true;
                 return;
             }
-            var maxTemp = wrs.Max(m => m.Temperature);
+            var maxTemp = wrs.Max(m => double.Parse(m.Temperature.Replace("°C", "")));
             LabelMaxTemp.Text = maxTemp.ToString();
-            MaxTempHour.Text = wrs.Where(m => m.Temperature == maxTemp).Select(m => m.Hour).ToList()[0].ToString();
-            var minTemp = wrs.Min(m => m.Temperature);
+            MaxTempHour.Text = wrs.Where(m =>double.Parse(m.Temperature.Replace("°C", "")) == maxTemp).Select(m => m.Hour).ToList()[0].ToString();
+            var minTemp = wrs.Min(m => double.Parse(m.Temperature.Replace("°C", "")));
             LabelMinTemp.Text = minTemp.ToString();
-            MinTempHour.Text = wrs.Where(m => m.Temperature == minTemp).Select(m => m.Hour).ToList()[0].ToString();
-            LabelAvgTemp.Text = Math.Round(wrs.Average(m => m.Temperature), 1).ToString();
+            MinTempHour.Text = wrs.Where(m => double.Parse(m.Temperature.Replace("°C", "")) == minTemp).Select(m => m.Hour).ToList()[0].ToString();
+            LabelAvgTemp.Text = Math.Round(wrs.Average(m => double.Parse(m.Temperature.Replace("°C", ""))), 1).ToString();
             GridView1.DataSource = wrs;
             GridView1.DataBind();
+            List<TempGraph> tempGraphs = new List<TempGraph>();
+            for (int i = 0; i < wrs.Count; i++)
+            {
+                TempGraph graph = new TempGraph();
+                graph.Temperature = double.Parse(wrs[i].Temperature.Replace("°C", ""));
+                graph.Hour = wrs[i].Hour;
+                tempGraphs.Add(graph);
+            }
+
+            if (tempGraphs == null)
+            {
+                return;
+            };
+
+            tempGraphs.Reverse();
+
+            ChartTemp.Series[0].IsXValueIndexed = true;
+            ChartTemp.ChartAreas[0].AxisX.Interval = 1;
+            ChartTemp.Series[0].XValueMember = "Hour";
+            ChartTemp.Series[0].YValueMembers = "Temperature";
+            ChartTemp.Series[0].ChartType = SeriesChartType.Line;
+
+            ChartTemp.DataSource = tempGraphs;
+            ChartTemp.DataBind();
+            string zero = "";
+            for (int i = 0; i < wrs.Count; i++)
+            {
+                if (wrs[i].Hour.ToString().Count() < 2)
+                {
+                    zero = "0";
+                }
+                else
+                {
+                    zero = "";
+                }
+                ChartTemp.Series[0].Points[i].ToolTip = $"{wrs[i].Temperature}°C - {zero}{wrs[i].Hour}:00";
+                ChartTemp.Series[0].Points[i].Color = Color.FromArgb(56, 80, 93);
+            }
             ErrorMessage.Visible = false;
         }
         protected void BindChart()
         {
-            var series = new Series();
-
             List<WeatherReading> tempsForSpecificDay = db.GetSpecificDay();
             List<TempGraph> tempGraphs = new List<TempGraph>();
             for (int i = 0; i < tempsForSpecificDay.Count; i++)
             {
                 TempGraph graph = new TempGraph();
-                graph.Temperature = tempsForSpecificDay[i].Temperature;
+                graph.Temperature = double.Parse(tempsForSpecificDay[i].Temperature.Replace("°C", ""));
                 graph.Hour = tempsForSpecificDay[i].Hour;
                 tempGraphs.Add(graph);
             }
@@ -158,33 +268,31 @@ namespace Default
                 return;
             };
 
-            series.XValueMember = "Hour";
+            tempGraphs.Reverse();
 
-            foreach (TempGraph t in tempGraphs)
-            {
-                series.Points.AddXY(t.Hour, t.Temperature);
-            }
+            ChartTemp.Series[0].IsXValueIndexed = true;
+            ChartTemp.ChartAreas[0].AxisX.Interval = 1;
+            ChartTemp.Series[0].XValueMember = "Hour";
+            ChartTemp.Series[0].YValueMembers = "Temperature";
+            ChartTemp.Series[0].ChartType = SeriesChartType.Line;
 
-            ChartTemp.Series.Add(series);
+            ChartTemp.DataSource = tempGraphs;
+            ChartTemp.DataBind();
 
             string zero = "";
-            if (tempGraphs.Count > 0)
+            for (int i = 0; i < tempGraphs.Count; i++)
             {
-                series.ChartType = SeriesChartType.Line;
-                int pointCounter = 0;
-                foreach (DataPoint p in series.Points)
+                if (tempGraphs[i].Hour.ToString().Count() < 2)
                 {
-                    if (p.XValue < 10)
-                        zero = "0";
-                    else
-                        zero = "";
-                    series.Points[pointCounter].ToolTip = $"{p.YValues[0]}°C - {zero}{p.XValue}:00";
-                    series.Points[pointCounter].Color = Color.FromArgb(56, 80, 93);
-
-                    pointCounter++;
+                    zero = "0";
                 }
+                else
+                {
+                    zero = "";
+                }
+                ChartTemp.Series[0].Points[i].ToolTip = $"{tempGraphs[i].Temperature}°C - {zero}{tempGraphs[i].Hour}:00";
+                ChartTemp.Series[0].Points[i].Color = Color.FromArgb(56, 80, 93);
             }
-            ChartTemp.DataBindTable(tempGraphs, "Hour");
         }
     }
 }

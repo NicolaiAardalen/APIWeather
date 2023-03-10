@@ -49,7 +49,6 @@ namespace Harvester
                     float vindkasthastighet = classes.properties.timeseries[0].data.instant.details.wind_speed_of_gust;
                     string sky = classes.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
 
-                    //call bl
                     var BLayer = new BLayer();
                     BLayer.Insert(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, temperatur, millimeter, luftfuktighet, vindretning, vindhastighet, vindkasthastighet, sky);
                 }

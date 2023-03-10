@@ -32,11 +32,6 @@ namespace BusinessLayer
             List<WeatherReading> list = new List<WeatherReading>();
             return dbl.GetLast24hours();
         }
-        public List<WeatherReading> GetLast24hoursForGraph()
-        {
-            List<WeatherReading> list = new List<WeatherReading>();
-            return dbl.GetLast24hoursForGraph();
-        }
         public List<WeatherReading> GetSpecificDay()
         {
             List<WeatherReading> list = new List<WeatherReading>();
@@ -67,23 +62,10 @@ namespace BusinessLayer
             List<WeatherReading> list = new List<WeatherReading>();
             return dbl.UpdateGridviewByButtonOnYearSite(Year);
         }
-        public List<WeatherReading> Last24HourGraph()
-        {
-            List<WeatherReading> list = new List<WeatherReading>();
-            return dbl.Last24HourGraph();
-        }
 
         public List<int> GetYearsInDB()
         {
             return dbl.GetYearsInDB();
         }
-        //public List<int> GetMonthsInDB()
-        //{
-        //    return dbl.GetMonthsInDB();
-        //}
-        //public List<int> GetDaysInDB()
-        //{
-        //    return dbl.GetDaysInDB();
-        //}
     }
 }
