@@ -58,7 +58,7 @@ namespace Harvester
             }
             catch (Exception ex)
             {
-                File.AppendAllText("C:\\Harvester\\Log.txt", DateTime.Now.ToString() + " " + ex.Message + " - " + ex.InnerException + "\n");
+                File.AppendAllText($"C:\\Harvester\\Log.txt", $"{DateTime.Now.ToString()} {ex.Message} - {ex.InnerException}\n");
                 return 0;
             }
             return 1;
