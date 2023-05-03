@@ -41,16 +41,16 @@ namespace Harvester
                 {
                     var result = streamReader.ReadToEnd();
                     var classes = JsonSerializer.Deserialize<Weather>(result);
-                    var jsonhttprequest = classes.properties.timeseries[0].data.instant.details;
-                    var jsonhttprequestviasky = classes.properties.timeseries[0].data.next_1_hours.summary;
+                    var JsonHTTPRequest = classes.properties.timeseries[0].data.instant.details;
+                    var JsonHTTPRequestSky = classes.properties.timeseries[0].data.next_1_hours.summary;
 
-                    float temperatur = jsonhttprequest.air_temperature;
-                    float millimeter = jsonhttprequest.precipitation_rate;
-                    float luftfuktighet = jsonhttprequest.relative_humidity;
-                    float vindretning = jsonhttprequest.wind_from_direction;
-                    float vindhastighet = jsonhttprequest.wind_speed;
-                    float vindkasthastighet = jsonhttprequest.wind_speed_of_gust;
-                    string sky = jsonhttprequestviasky.symbol_code;
+                    float temperatur = JsonHTTPRequest.air_temperature;
+                    float millimeter = JsonHTTPRequest.precipitation_rate;
+                    float luftfuktighet = JsonHTTPRequest.relative_humidity;
+                    float vindretning = JsonHTTPRequest.wind_from_direction;
+                    float vindhastighet = JsonHTTPRequest.wind_speed;
+                    float vindkasthastighet = JsonHTTPRequest.wind_speed_of_gust;
+                    string sky = JsonHTTPRequestSky.symbol_code;
 
                     var BLayer = new BLayer();
                     BLayer.Insert(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, temperatur, millimeter, luftfuktighet, vindretning, vindhastighet, vindkasthastighet, sky);
